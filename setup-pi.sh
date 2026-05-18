@@ -8,7 +8,7 @@ REPO_URL="https://github.com/holgergaw/party-fotos.git"
 
 echo "=== 1. PHP-Erweiterungen installieren ==="
 sudo apt-get update -q
-sudo apt-get install -y php8.2-gd php8.2-zip git
+sudo apt-get install -y php8.4-gd php8.4-zip git
 
 echo "=== 2. Repo klonen ==="
 sudo mkdir -p "$APP_DIR"
@@ -64,7 +64,7 @@ server {
     # PHP-Dateien
     location ~ \.php$ {
         include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:/run/php/php8.2-fpm.sock;
+        fastcgi_pass unix:/run/php/php8.4-fpm.sock;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         include fastcgi_params;
     }
@@ -81,8 +81,8 @@ sudo rm -f /etc/nginx/sites-enabled/default
 
 echo "=== 7. nginx + PHP-FPM neu starten ==="
 sudo nginx -t && sudo systemctl reload nginx
-sudo systemctl enable php8.2-fpm
-sudo systemctl restart php8.2-fpm
+sudo systemctl enable php8.4-fpm
+sudo systemctl restart php8.4-fpm
 
 echo ""
 echo "✅ Setup fertig! App erreichbar unter: http://$(hostname -I | awk '{print $1}')"
