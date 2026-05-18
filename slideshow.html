@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Party Diashow</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #000;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Playfair Display', serif;
+    cursor: none;
+  }
+
+  #slide {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: opacity 1.2s ease;
+    opacity: 0;
+  }
+
+  #slide.visible { opacity: 1; }
+
+  /* Ken Burns */
+  #slide.zoom {
+    animation: kenburns 8s ease forwards;
+  }
+
+  @keyframes kenburns {
+    0%   { transform: scale(1)    translate(0, 0); }
+    100% { transform: scale(1.08) translate(-1%, -1%); }
+  }
+
+  #overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(0,0,0,0.6) 0%,
+      transparent 40%,
+      transparent 80%,
+      rgba(0,0,0,0.2) 100%
+    );
+    pointer-events: none;
+  }
+
+  #counter {
+    position: absolute;
+    top: 24px;
+    right: 28px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.1em;
+    font-style: italic;
+  }
+
+  #new-badge {
+    position: absolute;
+    top: 24px;
+    left: 28px;
+    background: rgba(240,192,64,0.9);
+    color: #000;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: sans-serif;
+    padding: 4px 12px;
+    border-radius: 99px;
+    letter-spacing: 0.08em;
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+
+  #new-badge.show { opacity: 1; }
+
+  #empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.2);
+    gap: 16px;
+    display: none;
+  }
+
+  #empty.visible { display: flex; }
+
+  #empty .icon { font-size: 64px; }
+  #empty p { font-size: 18px; font-style: italic; }
+
+  /* Progress bar at bottom */
+  #progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: rgba(240,192,64,0.7);
+    width: 0%;
+    transition: none;
+  }
+
+  #progress.animating {
+    transition: width linear;
+  }
+
+  #version {
+    position: absolute;
+    bottom: 10px;
+    right: 16px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.12);
+    letter-spacing: 0.1em;
+    font-family: sans-serif;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<div id="slide"></div>
+<div id="overlay"></div>
+<div id="counter"></div>
+<div id="new-badge">✨ NEUES FOTO</div>
+<div id="progress"></div>
+<div id="version">v1.0.0</div>
+
+<div id="empty">
+  <div class="icon">📷</div>
+  <p>Warte auf Fotos…</p>
+</div>
+
+<script>
+  const SLIDE_DURATION = 7000;   // ms pro Bild
+  const POLL_INTERVAL  = 5000;   // ms Polling-Intervall
+
+  let photos = [];
+  let currentIndex = 0;
+  let slideTimer = null;
+  let knownPhotos = new Set();
+  let isRunning = false;
+
+  const slide    = document.getElementById('slide');
+  const counter  = document.getElementById('counter');
+  const badge    = document.getElementById('new-badge');
+  const progress = document.getElementById('progress');
+  const empty    = document.getElementById('empty');
+
+  async function fetchPhotos() {
+    try {
+      const res = await fetch('photos.php?shuffle&_=' + Date.now());
+      const data = await res.json();
+
+      const newOnes = data.filter(f => !knownPhotos.has(f));
+      newOnes.forEach(f => knownPhotos.add(f));
+
+      if (newOnes.length > 0 && photos.length > 0) {
+        showNewBadge();
+        // Neue Fotos vorne einreihen
+        photos = [...newOnes, ...photos];
+      } else if (photos.length === 0 && data.length > 0) {
+        photos = data;
+        data.forEach(f => knownPhotos.add(f));
+        start();
+      }
+
+      empty.classList.toggle('visible', photos.length === 0);
+    } catch(e) {
+      console.warn('Poll-Fehler:', e);
+    }
+  }
+
+  function showNewBadge() {
+    badge.classList.add('show');
+    setTimeout(() => badge.classList.remove('show'), 3000);
+  }
+
+  function showSlide(index) {
+    const photo = photos[index];
+    if (!photo) return;
+
+    counter.textContent = `${index + 1} / ${photos.length}`;
+
+    // Reset Ken Burns
+    slide.classList.remove('zoom', 'visible');
+    slide.style.backgroundImage = `url('uploads/${encodeURIComponent(photo)}')`;
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        slide.classList.add('visible', 'zoom');
+      });
+    });
+
+    // Progress bar
+    progress.style.transition = 'none';
+    progress.style.width = '0%';
+    requestAnimationFrame(() => {
+      progress.style.transition = `width ${SLIDE_DURATION}ms linear`;
+      progress.style.width = '100%';
+    });
+  }
+
+  function next() {
+    currentIndex = (currentIndex + 1) % photos.length;
+    showSlide(currentIndex);
+  }
+
+  function start() {
+    if (isRunning || photos.length === 0) return;
+    isRunning = true;
+    showSlide(0);
+    slideTimer = setInterval(next, SLIDE_DURATION);
+  }
+
+  // Polling
+  fetchPhotos();
+  setInterval(fetchPhotos, POLL_INTERVAL);
+
+  // Fullscreen on click
+  document.addEventListener('click', () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      document.documentElement.requestFullscreen();
+    }
+  });
+
+  // Tastatur: Leertaste = nächstes Bild
+  document.addEventListener('keydown', e => {
+    if (e.code === 'Space') next();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php --version)",
+      "Bash(mkdir -p \"C:\\\\CODE\\\\Foto\\\\.claude\")",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(mkdir -p \"/mnt/c/CODE/Foto/screenshots\")",
+      "Read(//mnt/c/CODE/**)",
+      "WebFetch(domain:api.anthropic.com)",
+      "Bash(php -r \"echo password_hash\\('Holger123', PASSWORD_BCRYPT\\);\")",
+      "Bash(php -l \"C:\\\\CODE\\\\Foto\\\\admin.php\")",
+      "Bash(php -l \"C:\\\\CODE\\\\Foto\\\\upload.php\")",
+      "Bash(php -l \"C:\\\\CODE\\\\Foto\\\\photos.php\")",
+      "Bash(php -l \"C:\\\\CODE\\\\Foto\\\\download.php\")",
+      "Bash(php -r ' *)"
+    ]
+  }
+}

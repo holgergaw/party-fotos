@@ -1,0 +1,14 @@
+# Hochgeladene Fotos (bleiben auf dem Server)
+uploads/
+
+# Laufzeit-Daten (werden auf dem Server angelegt)
+data/config.json
+data/metadata.json
+
+# Thumbnails / Cache falls später genutzt
+thumbs/
+cache/
+
+# OS
+.DS_Store
+Thumbs.db

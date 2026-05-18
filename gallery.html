@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#FEF9F2">
+<title>Galerie · Party Fotos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .gallery {
+    padding: calc(var(--safe-top) + 20px) 18px 20px;
+  }
+  .gallery .head {
+    padding: 8px 6px 14px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .gallery .head .title-wrap {
+    display: flex; flex-direction: column; gap: 2px; min-width: 0;
+  }
+  .gallery h1 {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: 38px;
+    letter-spacing: -0.025em;
+    line-height: 1;
+    margin: 0;
+    background: linear-gradient(170deg, #D78410 0%, #C97D0A 50%, #B0570E 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .gallery .count {
+    font-size: 13px;
+    color: var(--ink-soft);
+    letter-spacing: -0.005em;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .gallery .count .live {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 9px; border-radius: 999px;
+    background: rgba(212,90,30,0.1);
+    color: var(--orange);
+    font-weight: 600; font-size: 11px;
+    letter-spacing: 0;
+  }
+  .gallery .count .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--orange);
+    box-shadow: 0 0 0 0 rgba(212,90,30,0.6);
+    animation: pulse 1.6s ease-out infinite;
+  }
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(212,90,30,0.55); }
+    100% { box-shadow: 0 0 0 8px rgba(212,90,30,0); }
+  }
+
+  /* Kategorie-Tabs */
+  .cat-tabs {
+    display: flex;
+    gap: 8px;
+    padding: 0 6px 14px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .cat-tabs::-webkit-scrollbar { display: none; }
+  .cat-tab {
+    flex: 0 0 auto;
+    padding: 7px 16px;
+    border-radius: 999px;
+    border: 1.5px solid var(--line);
+    background: #fff;
+    font-family: var(--body);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-mute);
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .cat-tab.active {
+    background: linear-gradient(135deg, #FFF4DF, #FFE5C2);
+    border-color: rgba(201,125,10,0.35);
+    color: var(--amber);
+  }
+
+  /* Toolbar */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 4px 4px 14px;
+  }
+  .chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 14px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-sm);
+    font-size: 14px; font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+    font-family: var(--body);
+    transition: transform .12s ease, box-shadow .18s ease, background .18s ease, color .18s ease;
+  }
+  .chip:active { transform: translateY(1px); }
+  .chip.active {
+    background: linear-gradient(135deg, #FFF4DF, #FFE5C2);
+    border-color: rgba(201,125,10,0.35);
+    color: var(--amber);
+  }
+  .chip .check {
+    width: 16px; height: 16px;
+    border-radius: 5px;
+    border: 1.5px solid rgba(28,24,20,0.35);
+    display: inline-flex; align-items: center; justify-content: center;
+    background: #fff;
+    transition: all .15s ease;
+  }
+  .chip.active .check {
+    background: linear-gradient(135deg, #E89A2B, #C97D0A);
+    border-color: transparent;
+    color: #fff;
+  }
+  .chip .check svg { width: 10px; height: 10px; opacity: 0; transition: opacity .15s ease; }
+  .chip.active .check svg { opacity: 1; }
+  .chip-ghost {
+    background: transparent; border-color: transparent; box-shadow: none;
+    color: var(--ink-soft);
+  }
+
+  /* Grid */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .tile {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--card);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .2s ease;
+    isolation: isolate;
+    border: none;
+    padding: 0;
+  }
+  .tile img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .35s ease, filter .2s ease;
+  }
+  .tile:active img { transform: scale(.99); }
+  .tile::after {
+    content: "";
+    position: absolute; inset: 0;
+    border-radius: 16px;
+    box-shadow: inset 0 0 0 0 rgba(201,125,10,0);
+    pointer-events: none;
+    transition: box-shadow .2s ease;
+  }
+  .tile.sel { transform: scale(.96); }
+  .tile.sel::after {
+    box-shadow:
+      inset 0 0 0 3px #C97D0A,
+      0 6px 16px rgba(201,125,10,0.25);
+  }
+  .tile.sel img { filter: brightness(0.96) saturate(1.05); }
+  .tile .gradient {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 40%;
+    background: linear-gradient(180deg, transparent, rgba(28,24,20,0.35));
+    opacity: 0; transition: opacity .2s ease;
+    pointer-events: none;
+  }
+  .tile.sel .gradient { opacity: 1; }
+
+  .check-badge {
+    position: absolute;
+    top: 8px; right: 8px;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1.5px solid rgba(255,255,255,0.9);
+    box-shadow: 0 2px 6px rgba(28,24,20,0.18);
+    display: flex; align-items: center; justify-content: center;
+    color: transparent;
+    transform: scale(0.6);
+    opacity: 0;
+    transition: transform .18s cubic-bezier(.2,.7,.2,1.4), opacity .15s ease, background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .check-badge svg { width: 14px; height: 14px; }
+  .tile.sel .check-badge {
+    transform: scale(1);
+    opacity: 1;
+    background: linear-gradient(135deg, #E89A2B, #C97D0A);
+    border-color: #fff;
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(201,125,10,0.45);
+  }
+
+  /* Empty state */
+  .empty {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 60px 20px;
+    text-align: center;
+  }
+  .empty .ico { font-size: 60px; }
+  .empty h2 {
+    font-family: var(--display);
+    font-size: 22px;
+    color: var(--amber);
+    margin: 0;
+  }
+  .empty p { font-size: 14px; color: var(--ink-soft); margin: 0; }
+  .empty a {
+    margin-top: 4px;
+    padding: 12px 28px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    color: var(--ink);
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Floating download FAB */
+  .download-fab {
+    position: fixed;
+    left: 16px; right: 16px;
+    bottom: calc(80px + var(--safe-bot));
+    z-index: 60;
+    transform: translateY(20px);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform .25s cubic-bezier(.2,.7,.2,1), opacity .2s ease;
+    max-width: 448px;
+    margin: 0 auto;
+  }
+  .download-fab.show {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .download-fab .btn-amber {
+    border-radius: 18px;
+    min-height: 60px;
+    font-size: 17px;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.25) inset,
+      0 -2px 0 rgba(120,60,5,0.18) inset,
+      0 8px 18px rgba(201,125,10,0.28),
+      0 22px 50px rgba(212,90,30,0.28);
+  }
+  .count-pill {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 22px; height: 22px; padding: 0 7px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.22);
+    font-size: 13px;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+  <div class="blobs" aria-hidden="true">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+  </div>
+
+  <main class="app gallery has-nav" data-screen-label="Galerie">
+    <section class="head enter enter-1">
+      <div class="title-wrap">
+        <h1>Galerie</h1>
+        <div class="count">
+          <span id="countText">Lade…</span>
+          <span class="live"><span class="dot"></span> Live</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="cat-tabs enter enter-2" role="tablist">
+      <button class="cat-tab active" data-cat="all"      role="tab">Alle</button>
+      <button class="cat-tab"        data-cat="fotobox"  role="tab">📷 Fotobox</button>
+      <button class="cat-tab"        data-cat="guest"    role="tab">🙋 Gästefotos</button>
+    </div>
+
+    <div class="toolbar enter enter-3">
+      <button class="chip" id="selectAll" type="button" aria-pressed="false">
+        <span class="check" aria-hidden="true">
+          <svg viewBox="0 0 12 12" fill="none"><path d="M2 6.5 5 9.5 10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span id="selectAllLabel">Alle auswählen</span>
+      </button>
+      <button class="chip chip-ghost" id="clearBtn" type="button" hidden>Aufheben</button>
+    </div>
+
+    <div class="grid enter enter-4" id="grid"></div>
+  </main>
+
+  <div class="download-fab" id="fab">
+    <button class="btn btn-amber" id="downloadBtn" type="button">
+      <span id="downloadLabel">Herunterladen</span>
+      <span class="count-pill" id="fabCount">0</span>
+    </button>
+  </div>
+
+  <nav class="bottom-nav" aria-label="Hauptnavigation">
+    <div class="bottom-nav-inner">
+      <a class="nav-item" href="index.html"><span class="ico" aria-hidden="true">🏠</span><span>Start</span></a>
+      <a class="nav-item" href="upload.html"><span class="ico" aria-hidden="true">📸</span><span>Hochladen</span></a>
+      <a class="nav-item active" href="gallery.html" aria-current="page"><span class="ico" aria-hidden="true">🖼️</span><span>Galerie</span></a>
+    </div>
+  </nav>
+
+<script>
+(function(){
+  const grid          = document.getElementById('grid');
+  const fab           = document.getElementById('fab');
+  const fabCount      = document.getElementById('fabCount');
+  const selectAllBtn  = document.getElementById('selectAll');
+  const selectAllLbl  = document.getElementById('selectAllLabel');
+  const clearBtn      = document.getElementById('clearBtn');
+  const countText     = document.getElementById('countText');
+  const downloadBtn   = document.getElementById('downloadBtn');
+  const downloadLabel = document.getElementById('downloadLabel');
+  const catTabs       = document.querySelectorAll('.cat-tab');
+
+  let photos   = [];
+  let activeCat = 'all';
+  const selected = new Set();
+
+  // Kategorie-Tabs
+  catTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      catTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      activeCat = tab.dataset.cat;
+      selected.clear();
+      load();
+    });
+  });
+
+  async function load(){
+    try {
+      const url = 'photos.php?_=' + Date.now() + (activeCat !== 'all' ? '&cat=' + activeCat : '');
+      const res = await fetch(url);
+      photos = await res.json();
+    } catch(e) { photos = []; }
+    render();
+  }
+
+  function render(){
+    grid.innerHTML = '';
+    countText.textContent = photos.length + (photos.length === 1 ? ' Foto' : ' Fotos');
+
+    if (photos.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'empty';
+      empty.innerHTML = `
+        <div class="ico">📷</div>
+        <h2>Noch keine Fotos</h2>
+        <p>Sei der Erste und lade ein Foto hoch!</p>
+        <a href="upload.html">Foto hochladen</a>`;
+      grid.appendChild(empty);
+      return;
+    }
+
+    photos.forEach((filename, i) => {
+      const tile = document.createElement('button');
+      tile.className = 'tile enter';
+      tile.type = 'button';
+      tile.setAttribute('aria-pressed', 'false');
+      tile.dataset.filename = filename;
+      tile.style.animationDelay = (0.05 + i * 0.035) + 's';
+      if (selected.has(filename)) tile.classList.add('sel');
+      tile.innerHTML = `
+        <img loading="lazy" alt="Foto ${i+1}" src="uploads/${encodeURIComponent(filename)}">
+        <div class="gradient" aria-hidden="true"></div>
+        <span class="check-badge" aria-hidden="true">
+          <svg viewBox="0 0 14 14" fill="none"><path d="M2 7.5 5.5 11 12 3.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>`;
+      tile.addEventListener('click', () => toggle(filename, tile));
+      grid.appendChild(tile);
+    });
+    sync();
+  }
+
+  function toggle(filename, el){
+    if (selected.has(filename)){
+      selected.delete(filename);
+      el.classList.remove('sel');
+      el.setAttribute('aria-pressed','false');
+    } else {
+      selected.add(filename);
+      el.classList.add('sel');
+      el.setAttribute('aria-pressed','true');
+    }
+    sync();
+  }
+
+  function sync(){
+    const n = selected.size;
+    fabCount.textContent = n;
+    fab.classList.toggle('show', n > 0);
+    const all = photos.length > 0 && n === photos.length;
+    selectAllBtn.classList.toggle('active', all);
+    selectAllBtn.setAttribute('aria-pressed', all ? 'true' : 'false');
+    selectAllLbl.textContent = all ? 'Alle gewählt' : 'Alle auswählen';
+    clearBtn.hidden = (n === 0);
+    downloadLabel.textContent = n === 1 ? 'Herunterladen' : 'Herunterladen';
+  }
+
+  selectAllBtn.addEventListener('click', () => {
+    const tiles = grid.querySelectorAll('.tile');
+    if (selected.size === photos.length && photos.length > 0) {
+      selected.clear();
+      tiles.forEach(t => { t.classList.remove('sel'); t.setAttribute('aria-pressed','false'); });
+    } else {
+      photos.forEach(f => selected.add(f));
+      tiles.forEach(t => { t.classList.add('sel'); t.setAttribute('aria-pressed','true'); });
+    }
+    sync();
+  });
+
+  clearBtn.addEventListener('click', () => {
+    selected.clear();
+    grid.querySelectorAll('.tile').forEach(t => { t.classList.remove('sel'); t.setAttribute('aria-pressed','false'); });
+    sync();
+  });
+
+  downloadBtn.addEventListener('click', () => {
+    if (!selected.size) return;
+    if (selected.size === 1) {
+      // Einzeldownload über download.php → Wasserzeichen wird eingebrannt
+      const filename = [...selected][0];
+      window.location.href = 'download.php?file=' + encodeURIComponent(filename);
+      return;
+    }
+    // ZIP-Download via POST → Wasserzeichen auf alle Dateien
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'download.php';
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'files_json';
+    input.value = JSON.stringify([...selected]);
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+  });
+
+  load();
+})();
+</script>
+</body>
+</html>

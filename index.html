@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#FEF9F2">
+<title>Party Fotos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .home {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100svh;
+    padding: calc(var(--safe-top) + 32px) 24px calc(var(--safe-bot) + 24px);
+  }
+  .hero {
+    text-align: center;
+    margin-top: clamp(28px, 8vh, 80px);
+  }
+  .hero .confetti {
+    font-size: 76px;
+    line-height: 1;
+    display: inline-block;
+    transform-origin: 70% 70%;
+    animation: pop 1.1s cubic-bezier(.2,.7,.2,1) .05s both, sway 6s ease-in-out 1.2s infinite;
+    filter: drop-shadow(0 10px 22px rgba(212,90,30,0.22));
+  }
+  @keyframes pop {
+    0%   { opacity: 0; transform: scale(.5) rotate(-20deg); }
+    60%  { opacity: 1; transform: scale(1.15) rotate(8deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0); }
+  }
+  @keyframes sway {
+    0%,100% { transform: rotate(0); }
+    50%      { transform: rotate(-6deg); }
+  }
+  .hero h1 {
+    font-family: var(--display);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 0.92;
+    font-size: clamp(56px, 18vw, 76px);
+    margin: 14px 0 10px;
+    background: linear-gradient(170deg, #D78410 0%, #C97D0A 40%, #B0570E 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-wrap: balance;
+  }
+  .hero p {
+    font-size: 17px;
+    color: var(--ink-soft);
+    margin: 0;
+    letter-spacing: -0.005em;
+  }
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: clamp(36px, 7vh, 64px);
+  }
+  .diashow-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 22px;
+  }
+  .version {
+    margin-top: auto;
+    padding-top: 24px;
+  }
+</style>
+</head>
+<body>
+  <div class="blobs" aria-hidden="true">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+  </div>
+
+  <main class="app home" data-screen-label="Startseite">
+    <section class="hero">
+      <div class="confetti" aria-hidden="true">🎉</div>
+      <h1 class="enter enter-1" id="heroTitle">Party<br>Fotos</h1>
+      <p class="tagline enter enter-2" id="heroTagline">Teile deine schönsten Aufnahmen</p>
+    </section>
+
+    <section class="actions" aria-label="Aktionen">
+      <a class="action-card primary enter enter-3" href="upload.html">
+        <div class="icon-tile" aria-hidden="true">📸</div>
+        <div class="copy">
+          <div class="title">Foto hochladen</div>
+          <div class="subtitle">Teile deine Bilder live mit anderen</div>
+        </div>
+        <div class="chev" aria-hidden="true">›</div>
+      </a>
+      <a class="action-card enter enter-4" href="gallery.html">
+        <div class="icon-tile" aria-hidden="true">🖼️</div>
+        <div class="copy">
+          <div class="title">Fotos ansehen</div>
+          <div class="subtitle">Alle Bilder &amp; herunterladen</div>
+        </div>
+        <div class="chev" aria-hidden="true">›</div>
+      </a>
+    </section>
+
+    <footer class="version enter enter-5">
+      v1.0.0 · <a href="admin.html" style="color:inherit;text-decoration:none;opacity:0.5">Admin</a>
+    </footer>
+  </main>
+<script>
+(function(){
+  // Titel dynamisch aus config.json laden
+  fetch('admin.php?action=get_config')
+    .then(r => r.json())
+    .then(d => {
+      if (!d.ok) return;
+      if (d.title) {
+        const el = document.getElementById('heroTitle');
+        if (el) el.innerHTML = d.title.replace(/\s+/, '<br>');
+        document.title = d.title;
+      }
+      if (d.tagline) {
+        const tl = document.getElementById('heroTagline');
+        if (tl) tl.textContent = d.tagline;
+      }
+    })
+    .catch(() => {});
+})();
+</script>
+</body>
+</html>

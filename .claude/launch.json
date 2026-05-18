@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Party Fotos",
+      "runtimeExecutable": "php",
+      "runtimeArgs": ["-S", "localhost:8787", "-t", "C:\\CODE\\Foto"],
+      "port": 8787
+    }
+  ]
+}
