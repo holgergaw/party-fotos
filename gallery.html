@@ -449,12 +449,35 @@
     sync();
   });
 
-  downloadBtn.addEventListener('click', () => {
+  downloadBtn.addEventListener('click', async () => {
     if (!selected.size) return;
     if (selected.size === 1) {
       // Einzeldownload über download.php → Wasserzeichen wird eingebrannt
+      // Als Blob laden + <a download> auslösen, statt direkt zu navigieren:
+      // mobile Browser (v.a. Android Chrome) zeigen Bilder bei Direkt-Navigation
+      // sonst oft nur als Vorschau an, statt sie zu speichern.
       const filename = [...selected][0];
-      window.location.href = 'download.php?file=' + encodeURIComponent(filename);
+      const origLabel = downloadLabel.textContent;
+      downloadLabel.textContent = 'Wird vorbereitet…';
+      downloadBtn.disabled = true;
+      try {
+        const res = await fetch('download.php?file=' + encodeURIComponent(filename));
+        if (!res.ok) throw new Error('Download fehlgeschlagen');
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch (e) {
+        alert('Download fehlgeschlagen. Bitte erneut versuchen.');
+      } finally {
+        downloadLabel.textContent = origLabel;
+        downloadBtn.disabled = false;
+      }
       return;
     }
     // ZIP-Download via POST → Wasserzeichen auf alle Dateien
