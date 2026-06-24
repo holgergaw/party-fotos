@@ -2,7 +2,7 @@
 # an den Party-Foto-Server (Raspberry Pi) hoch.
 $ErrorActionPreference = 'Stop'
 
-$WatchDir   = 'D:\bilder'
+$WatchDir   = 'D:\FOTOBOOTH\Pictures\Saved Pictures\Originals'
 $DoneDir    = Join-Path $WatchDir '_uploaded'
 $ErrorDir   = Join-Path $WatchDir '_failed'
 $StateDir   = 'C:\Fotobox\_uploader\state'

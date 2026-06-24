@@ -1,6 +1,6 @@
 # Fotobox-Watcher
 
-Überwacht `D:\bilder` auf dem Fotobox-PC (Windows 10 Home) und lädt neue Fotos automatisch per HTTP an `http://192.168.2.2/upload.php?source=fotobox` hoch — sie erscheinen dann im "Fotobox"-Tab der Galerie.
+Überwacht `D:\FOTOBOOTH\Pictures\Saved Pictures\Originals` auf dem Fotobox-PC (Windows 10 Home) und lädt neue Fotos automatisch per HTTP an `http://192.168.2.2/upload.php?source=fotobox` hoch — sie erscheinen dann im "Fotobox"-Tab der Galerie.
 
 ## Installation auf dem Fotobox-PC
 
@@ -18,7 +18,7 @@
    ```powershell
    Start-ScheduledTask -TaskName 'FotoboxUploadWatcher'
    ```
-5. Testfoto in `D:\bilder` legen — nach ca. 6–9 Sekunden sollte es in `D:\bilder\_uploaded` verschoben sein und auf dem Pi unter `gallery.html` (Tab "Fotobox") auftauchen.
+5. Testfoto in `D:\FOTOBOOTH\Pictures\Saved Pictures\Originals` legen — nach ca. 6–9 Sekunden sollte es in `D:\FOTOBOOTH\Pictures\Saved Pictures\Originals\_uploaded` verschoben sein und auf dem Pi unter `gallery.html` (Tab "Fotobox") auftauchen.
 
 ## Live-Log beobachten
 
@@ -30,5 +30,5 @@ Get-Content "C:\Fotobox\_uploader\logs\upload_$(Get-Date -Format yyyyMMdd).log" 
 
 - **Task läuft nicht nach Neustart:** `Get-ScheduledTask -TaskName 'FotoboxUploadWatcher' | Get-ScheduledTaskInfo` prüfen (LastRunTime/LastTaskResult).
 - **Upload schlägt dauerhaft fehl:** Pi-Erreichbarkeit prüfen — `Test-NetConnection 192.168.2.2 -Port 80`.
-- **Dateien bleiben in `D:\bilder` liegen:** Log-Datei ansehen, meist Netzwerkproblem oder MIME-Typ wird vom Server abgelehnt.
-- **Datei wurde fälschlich schon als hochgeladen markiert:** Eintrag in `C:\Fotobox\_uploader\state\uploaded.json` löschen, Datei zurück nach `D:\bilder` verschieben.
+- **Dateien bleiben in `D:\FOTOBOOTH\Pictures\Saved Pictures\Originals` liegen:** Log-Datei ansehen, meist Netzwerkproblem oder MIME-Typ wird vom Server abgelehnt.
+- **Datei wurde fälschlich schon als hochgeladen markiert:** Eintrag in `C:\Fotobox\_uploader\state\uploaded.json` löschen, Datei zurück nach `D:\FOTOBOOTH\Pictures\Saved Pictures\Originals` verschieben.
