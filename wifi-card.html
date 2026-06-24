@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>WLAN-Karte · Party Fotos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-1: #FEF9F2;
+    --bg-2: #FDF0E6;
+    --amber: #C97D0A;
+    --orange: #D45A1E;
+    --ink: #1C1814;
+    --ink-soft: #6B5F52;
+    --line: rgba(28, 24, 20, 0.08);
+    --display: "Playfair Display", "Times New Roman", serif;
+    --body: "DM Sans", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: #ccc;
+    font-family: var(--body);
+  }
+
+  @media print {
+    html, body { background: #fff; }
+    .page { box-shadow: none !important; margin: 0 !important; }
+  }
+
+  /* A5-Karte: 148mm x 210mm */
+  .page {
+    width: 148mm;
+    height: 210mm;
+    margin: 10mm auto;
+    background: radial-gradient(120% 80% at 50% 0%, var(--bg-1) 0%, var(--bg-2) 100%);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 14mm 12mm;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0.45;
+    z-index: 0;
+  }
+  .blob.b1 {
+    width: 120mm; height: 120mm;
+    left: -40mm; top: -40mm;
+    background: radial-gradient(circle at 30% 30%, #F5C46E, #E89A2B 55%, transparent 75%);
+  }
+  .blob.b2 {
+    width: 100mm; height: 100mm;
+    right: -30mm; bottom: -30mm;
+    background: radial-gradient(circle at 60% 40%, #FFB279, #D45A1E 55%, transparent 75%);
+    opacity: 0.35;
+  }
+
+  .content { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 6mm; }
+
+  .icon {
+    font-size: 16mm;
+    line-height: 1;
+    filter: drop-shadow(0 4px 10px rgba(201,125,10,0.25));
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: 13mm;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    background: linear-gradient(170deg, #D78410 0%, #C97D0A 50%, #B0570E 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .tagline {
+    font-size: 4.6mm;
+    color: var(--ink-soft);
+    max-width: 90mm;
+    line-height: 1.4;
+  }
+
+  .qr-box {
+    background: #fff;
+    border-radius: 8mm;
+    padding: 7mm;
+    box-shadow: 0 2px 6px rgba(28,24,20,0.06), 0 12px 28px rgba(28,24,20,0.10);
+    border: 1px solid var(--line);
+    margin-top: 4mm;
+  }
+  .qr-box img {
+    width: 62mm;
+    height: 62mm;
+    display: block;
+  }
+
+  .wifi-name {
+    margin-top: 5mm;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 7mm;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .wifi-name .label {
+    display: block;
+    font-family: var(--body);
+    font-weight: 600;
+    font-size: 3.6mm;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 1.5mm;
+  }
+
+  .steps {
+    margin-top: 6mm;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5mm;
+    font-size: 4mm;
+    color: var(--ink-soft);
+  }
+  .steps .step {
+    display: flex;
+    align-items: center;
+    gap: 3mm;
+    justify-content: center;
+  }
+  .steps .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 6mm; height: 6mm;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #E89A2B, #C97D0A);
+    color: #fff;
+    font-weight: 700;
+    font-size: 3.4mm;
+    flex-shrink: 0;
+  }
+
+  .footer {
+    margin-top: 7mm;
+    font-size: 3.4mm;
+    color: var(--ink-soft);
+    opacity: 0.75;
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="content">
+      <div class="icon">📶</div>
+      <h1>Party<br>Fotos</h1>
+      <p class="tagline">Teile deine schönsten Aufnahmen — direkt von deinem Handy!</p>
+
+      <div class="qr-box">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlgAAAJYAQMAAACEqAqfAAAABlBMVEX///8AAABVwtN+AAAACXBIWXMAAA7EAAAOxAGVKw4bAAACvUlEQVR4nO3dQXbCIBDGcfKycOkROEqOFo+Wo3gEly580gLDMMTopuJL2/+3kSbwyw54E7TOEUII+Sc5hlXO+fohBOd8vLDk9jG3twddsLCwsLC6WHdXM0RrDOGUx6cLKdox3TzmmyVYWFhYWB2tqczag873KRvzfbV8HnTFwsLCwvqgNea/UvdyU/DUxsLCwsL6G9Z35thFc8g3a7CwsLCwPmdp6nyfuoTmpmvn+xosLCwsrF7WKrZOLntymdIHW4Npg4WFhYW1d2s7c3Fda4VwezEKCwsLC+u9lp26L3pURfb356brYDo6WRjkpSkWFhYWVjdrMaVwH1u6J19F9uQuF2huZjHAwsLCwtq3VTOXAWkLL0tCWi+u+aGp/r46q9isHVhYWFhY77WOWgpvu6dId5en99Key/Q+6s0LFhYWFlYHS3LI40spfI6f0aoPqjUYfZd5aw+IY2FhYWHt2hpkBdC1w22eJ09ZzFW/UYPBwsLCwupnBX0XKuPvbXuKn1qDeT3fY2FhYWH91KpnV075gte2uNJdXnqO8aOeXQlYWFhYWJ+ynp4vlG33lDvWQat3mVhYWFhY+7XKtj3mLmtHim1rmWW1dix583/BwsLCwupnXdvzhVont+cLg+zvT6VYM27P91hYWFhY77SexefxMqWXgnp6qO3WzPdYWFhYWLu3amlF1ovt37OyWayJhYWFhfVeayOjviOVHPS9aIrc9FhYWFhYnS07x6ecmyl9db7QaQ0GCwsLC+u3WbYGM0TLaf09tafHmnuKzz+qgoWFhYXV15ryUPs/Lq+P5wvr4UOJ/eErLCwsLKyPWrLt1jR7csnTM+BYWFhYWL/Iql8Csu2Tq5nKTSwsLCysTpamWNLdx55LeS9qOzp9KBYWFhZWR2sV2+XhfKGkfkdzsT4WFhYW1n4tQggh/yBfkmPrDEgO99oAAAAASUVORK5CYII=" alt="WLAN QR-Code">
+      </div>
+
+      <div class="wifi-name">
+        <span class="label">WLAN-Netzwerk</span>
+        Event
+      </div>
+
+      <div class="steps">
+        <div class="step"><span class="num">1</span> QR-Code scannen</div>
+        <div class="step"><span class="num">2</span> Mit WLAN verbinden (kein Passwort)</div>
+        <div class="step"><span class="num">3</span> Fotos hochladen &amp; ansehen 🎉</div>
+      </div>
+
+      <div class="footer">Kein Internet nötig — alles läuft lokal vor Ort</div>
+    </div>
+  </div>
+</body>
+</html>
