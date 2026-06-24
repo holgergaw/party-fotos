@@ -161,6 +161,36 @@
   }
   .help b { color: var(--amber); font-weight: 600; }
 
+  /* Android-Captive-Portal-Hinweis */
+  .android-tip {
+    display: none;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 18px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #FFF4DF, #FFE5C2);
+    border: 1px solid rgba(201,125,10,0.25);
+  }
+  .android-tip.show { display: flex; }
+  .android-tip .ico { font-size: 18px; line-height: 1.3; flex: 0 0 auto; }
+  .android-tip .txt {
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+  .android-tip .txt b { color: var(--amber); }
+  .android-tip .close {
+    margin-left: auto;
+    border: 0; background: transparent;
+    color: var(--ink-mute);
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 4px;
+    flex: 0 0 auto;
+  }
+
   /* Progress bar */
   .progress-bar {
     height: 4px;
@@ -201,6 +231,15 @@
       <input id="fileInput" type="file" accept="image/*" multiple>
     </div>
 
+    <div class="android-tip" id="androidTip">
+      <span class="ico" aria-hidden="true">⚠️</span>
+      <span class="txt">
+        Falls sich kein Dateiauswahl-Fenster öffnet: Tippe oben rechts auf <b>⋮</b> und wähle
+        <b>„Im Browser öffnen"</b> — dann nochmal versuchen.
+      </span>
+      <button class="close" id="androidTipClose" type="button" aria-label="Schließen">✕</button>
+    </div>
+
     <div class="selected enter" id="selected" aria-live="polite"></div>
 
     <div class="cta-wrap enter enter-3">
@@ -232,7 +271,18 @@
   const help    = document.getElementById('help');
   const progBar = document.getElementById('progressBar');
   const progFill= document.getElementById('progressFill');
+  const androidTip      = document.getElementById('androidTip');
+  const androidTipClose = document.getElementById('androidTipClose');
   let files = [];
+
+  // Android-Hinweis: Captive-Portal-WebViews unterstützen oft keinen Datei-Upload
+  if (/Android/i.test(navigator.userAgent) && !localStorage.getItem('androidTipDismissed')) {
+    androidTip.classList.add('show');
+  }
+  androidTipClose.addEventListener('click', () => {
+    androidTip.classList.remove('show');
+    localStorage.setItem('androidTipDismissed', '1');
+  });
 
   function fmt(b){
     if (b < 1024) return b + ' B';
