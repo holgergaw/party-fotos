@@ -46,7 +46,7 @@ function Send-Photo {
     try {
         $content = New-Object System.Net.Http.MultipartFormDataContent
         $bytes   = [System.IO.File]::ReadAllBytes($FilePath)
-        $byteContent = New-Object System.Net.Http.ByteArrayContent($bytes)
+        $byteContent = [System.Net.Http.ByteArrayContent]::new($bytes)
         $mime = switch ([IO.Path]::GetExtension($FilePath).ToLower()) {
             '.png'  { 'image/png' }
             '.gif'  { 'image/gif' }
