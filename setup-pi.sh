@@ -16,6 +16,7 @@ sudo git clone "$REPO_URL" "$APP_DIR"
 
 echo "=== 3. Verzeichnisse anlegen ==="
 sudo mkdir -p "$APP_DIR/uploads"
+sudo mkdir -p "$APP_DIR/thumbs"
 sudo mkdir -p "$APP_DIR/data"
 
 echo "=== 4. Basis-Konfiguration anlegen ==="
@@ -36,7 +37,7 @@ EOF
 echo "=== 5. Berechtigungen setzen ==="
 sudo chown -R www-data:www-data "$APP_DIR"
 sudo chmod -R 755 "$APP_DIR"
-sudo chmod -R 775 "$APP_DIR/uploads" "$APP_DIR/data"
+sudo chmod -R 775 "$APP_DIR/uploads" "$APP_DIR/thumbs" "$APP_DIR/data"
 
 echo "=== 6. nginx konfigurieren ==="
 sudo tee /etc/nginx/sites-available/party > /dev/null <<'NGINX'
@@ -53,6 +54,11 @@ server {
 
     # Uploads direkt ausliefern (kein PHP)
     location /uploads/ {
+        expires 1h;
+        add_header Cache-Control "public";
+    }
+
+    location /thumbs/ {
         expires 1h;
         add_header Cache-Control "public";
     }

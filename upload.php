@@ -44,6 +44,50 @@ if (!move_uploaded_file($file['tmp_name'], $dest)) {
     exit;
 }
 
+// Thumbnail erzeugen: lange Kante max. 1024px, kein Upscaling, Format = Originalendung
+function createThumbnail(string $srcPath, string $destPath, string $ext, int $maxEdge = 1024): bool {
+    $src = match($ext) {
+        'jpg','jpeg' => @imagecreatefromjpeg($srcPath),
+        'png'        => @imagecreatefrompng($srcPath),
+        'gif'        => @imagecreatefromgif($srcPath),
+        'webp'       => @imagecreatefromwebp($srcPath),
+        default      => null,   // HEIC/HEIF: GD kann das nicht zuverlässig lesen, kein Thumbnail
+    };
+    if (!$src) return false;
+
+    $w = imagesx($src); $h = imagesy($src);
+    $longEdge = max($w, $h);
+
+    if ($longEdge <= $maxEdge) {
+        $dst = $src; $dw = $w; $dh = $h;
+    } else {
+        $scale = $maxEdge / $longEdge;
+        $dw = (int)round($w * $scale);
+        $dh = (int)round($h * $scale);
+        $dst = imagecreatetruecolor($dw, $dh);
+        if ($ext === 'png' || $ext === 'gif') {
+            imagealphablending($dst, false);
+            imagesavealpha($dst, true);
+        }
+        imagecopyresampled($dst, $src, 0, 0, 0, 0, $dw, $dh, $w, $h);
+    }
+
+    $ok = match($ext) {
+        'jpg','jpeg' => imagejpeg($dst, $destPath, 78),
+        'png'        => imagepng($dst, $destPath, 6),
+        'gif'        => imagegif($dst, $destPath),
+        'webp'       => imagewebp($dst, $destPath, 78),
+        default      => false,
+    };
+    imagedestroy($src);
+    if ($dst !== $src) imagedestroy($dst);
+    return $ok;
+}
+
+$thumbDir = __DIR__ . '/thumbs/';
+if (!is_dir($thumbDir)) @mkdir($thumbDir, 0775, true);
+createThumbnail($dest, $thumbDir . $filename, $ext);
+
 // Kategorie aus Query-Parameter ermitteln
 $source = (($_GET['source'] ?? '') === 'fotobox') ? 'fotobox' : 'guest';
 

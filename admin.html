@@ -607,7 +607,7 @@
     const hideLabel = photo.hidden ? 'Ausgeblendet' : 'Ausblenden';
 
     tile.innerHTML = `
-      <img loading="lazy" src="uploads/${encodeURIComponent(photo.name)}" alt="">
+      <img loading="lazy" src="thumbs/${encodeURIComponent(photo.name)}" alt="" onerror="this.onerror=null;this.src='uploads/${encodeURIComponent(photo.name)}';">
       <span class="cat-badge ${catClass}">${catLabel}</span>
       <div class="hidden-label">Ausgeblendet</div>
       <div class="tile-actions">
