@@ -91,6 +91,36 @@
     color: var(--amber);
   }
 
+  /* Android-Captive-Portal-Hinweis */
+  .android-tip {
+    display: none;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 0 4px 14px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #FFF4DF, #FFE5C2);
+    border: 1px solid rgba(201,125,10,0.25);
+  }
+  .android-tip.show { display: flex; }
+  .android-tip .ico { font-size: 18px; line-height: 1.3; flex: 0 0 auto; }
+  .android-tip .txt {
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+  .android-tip .txt b { color: var(--amber); }
+  .android-tip .close {
+    margin-left: auto;
+    border: 0; background: transparent;
+    color: var(--ink-mute);
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 4px;
+    flex: 0 0 auto;
+  }
+
   /* Toolbar */
   .toolbar {
     display: flex;
@@ -299,6 +329,15 @@
       </div>
     </section>
 
+    <div class="android-tip" id="androidTip">
+      <span class="ico" aria-hidden="true">⚠️</span>
+      <span class="txt">
+        Falls der Download nicht funktioniert: Tippe oben rechts auf <b>⋮</b> und wähle
+        <b>„Im Browser öffnen"</b> — dann nochmal versuchen.
+      </span>
+      <button class="close" id="androidTipClose" type="button" aria-label="Schließen">✕</button>
+    </div>
+
     <div class="cat-tabs enter enter-2" role="tablist">
       <button class="cat-tab active" data-cat="all"      role="tab">Alle</button>
       <button class="cat-tab"        data-cat="fotobox"  role="tab">📷 Fotobox</button>
@@ -345,10 +384,21 @@
   const downloadBtn   = document.getElementById('downloadBtn');
   const downloadLabel = document.getElementById('downloadLabel');
   const catTabs       = document.querySelectorAll('.cat-tab');
+  const androidTip      = document.getElementById('androidTip');
+  const androidTipClose = document.getElementById('androidTipClose');
 
   let photos   = [];
   let activeCat = 'all';
   const selected = new Set();
+
+  // Android-Hinweis: Captive-Portal-WebViews unterstützen oft keinen Datei-Download
+  if (/Android/i.test(navigator.userAgent) && !localStorage.getItem('androidTipDismissed')) {
+    androidTip.classList.add('show');
+  }
+  androidTipClose.addEventListener('click', () => {
+    androidTip.classList.remove('show');
+    localStorage.setItem('androidTipDismissed', '1');
+  });
 
   // Kategorie-Tabs
   catTabs.forEach(tab => {
