@@ -514,6 +514,22 @@
         const res = await fetch('download.php?file=' + encodeURIComponent(filename));
         if (!res.ok) throw new Error('Download fehlgeschlagen');
         const blob = await res.blob();
+        const file = new File([blob], filename, { type: blob.type || 'image/jpeg' });
+
+        // iOS Safari erlaubt Webseiten nie ein automatisches Speichern in die Fotos-App
+        // (Datenschutz-Vorgabe von Apple). Die Web-Share-API öffnet stattdessen direkt
+        // das native Teilen-Menü mit "Bild sichern" als Option — ein Tap statt Long-Press.
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({ files: [file] });
+            return;
+          } catch (shareErr) {
+            if (shareErr && shareErr.name === 'AbortError') return; // Nutzer hat abgebrochen
+            // sonst: weiter zum Blob-Fallback unten
+          }
+        }
+
+        // Fallback (Android Chrome, Desktop-Browser ohne Share-API)
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
