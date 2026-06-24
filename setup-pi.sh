@@ -49,6 +49,8 @@ server {
 
     server_name _;
 
+    client_max_body_size 25M;
+
     # Uploads direkt ausliefern (kein PHP)
     location /uploads/ {
         expires 1h;
